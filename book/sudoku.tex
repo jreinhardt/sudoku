@@ -1,0 +1,323 @@
+\documentclass[a4paper,10pt,fleqn]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{ngerman}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{sudoku}
+
+%Placeholder
+\newenvironment{definition}[1]{\textbf{#1} \newline}{\newline}
+
+
+%opening
+\title{Quatsch machen mit Sudokus}
+\author{Johannes Reinhardt}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Einführung}
+Sudoku sind eine Klasse von Rätseln, die in der letzten Zeit unheimlich beliebt geworden sind. Viele Zeitungen drucken regelmäßig Sudokus ab, es gibt Sudokublöcke, Sudokucomputerprogramme und sogar Sudokutaschencomputer, die für einen beständigen Nachschub sorgen. Ein Teil ihrer Anziehungskraft verdanken die Sudokus ihrem einfachen Grundprinzip. In ihrer Grundform bestehen Sudokus aus einem Gitter mit 9x9  Feldern, das in 9 3x3 Blöcke weiterunterteilt ist. In einige der Felder sind Zahlen zwischen 1 und 9 eingetragen. Die Aufgabe besteht darin, die leeren Felder so auszufüllen, dass in jeder Zeile, Spalte und in jedem 3x3 Unterblock jeweils die Zahlen 1 bis 9 genau einmal vorkommen. Dazu gibt es eine Vielzahl an Variationen, u.A. größere und kleinere Sudokus (4x4 oder 16x16, sogar von einem 64x64 Sudoku habe ich gehört), siamesische Sudokuzwillinge (die sich zum Teil überlappen), verrückte Geometrien (10x10, die Unterblöcke sind dann nicht mehr quadratisch), 3D Sudokus und vieles mehr.
+
+Mich persönlich haben Sudokus nach einer Weile immer gelangweilt. Man weiß, dass sie im Prinzip durch methodisches Vorgehen lösbar sind. Der Lösungsvorgang an sich ist eher ätzend. Für solche einfachen Arbeiten hat man Computer, die das schneller erledigen. Was mich an Sudokus immer viel mehr interessiert hat, war ihre mathematische Struktur, und die Entwicklung von Lösungsalgorithmen. Einige meiner Überlegungen zum Thema Sudoku werde ich hier in diesem Dokument zusammenfassen. Es kommen einige mathematischen Schreibweisen in diesem Dokument vor, aber ich versuche im Text das Vorgehen so zu erklären, dass man auch ohne Vorkenntnisse verstehen kann, was passiert.
+
+\section{Struktur}
+\subsection{Definition Sudoku}
+
+Wir wollen zunächst ein paar Begriffe klären, damit klar ist, von was denn gerade die Rede ist.
+\newline
+
+\begin{definition}{Sudoku}
+Ein Sudoku der Größe $n = k^2$ ist ein $n \times n$ Plätze großes Gitter. Auf einigen der Plätze sitzen Symbole aus einem $n$ Zeichen umfassenden Alphabet, in einer Weise, so dass es genau eine Lösung zu diesem Sudoku gibt.
+\end{definition}
+
+
+
+\begin{definition}{Lösung}
+Eine Lösung der Größe $n = k^2$ ist ein $n \times n$ Plätze großes Gitter. Auf allen Plätzen sitzen Symbole aus einem $n$ Zeichen umfassenden Alphabet, in einer Weise, so dass in jeder Spalte, in jeder Reihe und in jedem der n disjunkten, $kxk$ Plätze großen Untergitter (auch Block genannt) jedes Symbol aus dem Alphabet genau einmal vorkommt.
+\end{definition}
+
+[Verfeinern, Menge für Sudokus, Menge für ausgefüllte Gitter, ,Menge für Lösungen]
+
+Hier werden wir eine Lösung als $S \in \mathbb{S}_n := {1,2,\dots n}^{n \times n}$ mit $ n = k^2 \in \mathbb{N}$ notieren. Das Feld in der iten Zeile und der jten Spalte werden mit $S_{ij}$ bezeichnet. Die Funktion $b(i,j): \mathbb{N}^2 \to \mathbb{N}^2 \quad (i,j) \mapsto ( k \cdot \lfloor \frac{i - 1}{k}\rfloor + \lfloor \frac{j - 1}{k} + 1 \rfloor, k \cdot (i -1  \% k) + (j- 1 \% k))$ hilft uns dabei, die $n$ Felder des iten Blocks einfach zu adressieren.
+
+Üblicherweise werden als Alphabet bei Größen bis 9 die arabischen Ziffern verwendet, für Größe 5 die römischen Buchstaben, und für größere Sudokus eine Mischung.
+
+\begin{figure}[h]
+\begin{sudoku}
+| |9| |7| |3| |6| |.
+| |5| |4| |8| |1| |.
+|1| |8| |5| |9| |4|.
+|7| | |1|8|2| | |3|.
+| |4|2| |6| |5|8| |.
+|3| | |9|4|5| | |2|.
+|8| |6| |7| |1| |9|.
+| |2| |8| |1| |5| |.
+| |1| |6| |9| |4| |.
+\end{sudoku}
+\caption{Ein Beispiel für ein Sudoku der Größe 9}
+\end{figure}
+
+\subsection{Wie viele Sudokus gibt es?}
+
+Das ist eine ziemlich interessante Frage. Man weiß aber die Antwort darauf bisher nicht.
+
+Einfacher als die Frage nach der Anzahl der Sudokus ist die Anzahl der Lösungen. Für Lösungen der Größe 4 ist die Anzahl sogar recht einfach auszurechnen. Wir gehen blockweise vor. Zuerst der linke oberer Block. Es gibt $4!$ Möglichkeiten 4 Symbole auf 4 Plätze zu verteilen. Dadurch werden im oberen rechten und unteren linken Block einige der Möglichkeiten eliminiert. Es fehlen pro Zeile bzw. Spalte noch zwei Symbole, die man jeweils vertauschen kann. Also pro Block 4 Möglichkeiten. Der untere rechte Block ist damit schon vollständig festgelegt. Das macht insgesamt $4! \cdot 4 \cdot 4 = 384$ Lösungen. Sudokus der Größe 4 gibt es deutlich mehr, da zu jeder Lösung mehrere Sudokus existieren.
+
+Für die Anzahl der Lösungen der Größe 9 kann man jedoch sehr grobe Abschätzungen anstellen. Es gibt $\frac{81!}{9!^9} = 5.3 \cdot 10^{70}$ Möglichkeiten, die 81 Symbole auf die 81 Felder zu verteilen. Jedoch sind nicht alle davon gültige Lösungen. Es handelt sich also um eine obere Grenze.
+
+Als untere Grenze kann man sich überlegen, dass es ja mindestens eine Lösung gibt. Aus dieser Lösung lassen sich weitere Lösungen gewinnen, indem man gewisse Operationen durchführt. Zum Beispiel lassen sich die Symbole beliebig vertauschen, das ergibt schonmal $9! = 362880$ 'äquivalente' Möglichkeiten. Oder die Lösung lässt sich drehen und spiegeln, so kann man $4 \cdot 2 = 8$ unterschiedliche Varianten der Lösung gewinnen, wenn man davon ausgeht, dass die Lösung hinreichend asymetrisch ist. Des weiteren lassen sich Zeilen und Spalten innerhalb der Blockgrenzen beliebig vertauschen, pro Dreierpaket ergibt das $6$, insgesamt also $6^6 = 46656$ weitere Lösungen. Eine beliebige Kombination dieser Maßnahmen erlaubt es uns also, aus einer gegebenen Lösung (man könnte z.B. die zu dem Sudoku in Tabelle 1 nehmen) $9! \cdot 8 \cdot 6^6 = 1.354 \cdot 10^{11}$ weitere Lösungen zu erzeugen. Also gibt es mindestens so viele Lösungen. Das ist unsere untere Schranke.
+
+Eine sehr grobe obere Schranke für die Anzahl der Sudokus kann man auch errechnen. Man weiß, dass ein Sudoku mit 17 festgelegten Symbolen eindeutig lösbar sein kann, mit 15 jedoch nicht mehr. Das heißt, dass es nur Sudokus mit zwischen 16 und 80 vorgegebenen Symbolen geben kann. Für $n \in {16,17,18,\dots 80}$ vorgegebene Symbolen gibt es höchstens $\frac{81!}{n!}$ Möglichkeiten, diese auf die 81 Plätze zu verteilen. Da ja auch immer Zahlen doppelt vorkommen, sind dadurch einige dieser Möglichkeiten gleich. Es sind mindestens $\cdot \lfloor \frac{n}{9} \rfloor ^{ 9 - ( n \% 9)} \cdot \lfloor \frac{n}{9} + 1 \rfloor ^ {n \% 9}$ dieser Möglichkeiten gleich, dieser Fall tritt ein, wenn die Symbolanzahlen möglichst gleich sind. Insgesamt bleiben dann höchstens
+
+\begin{equation}
+	Z = \frac{81!^{65}}{\prod_{i=16}^{65} i! \cdot \lfloor \frac{i}{9} \rfloor ^{ 9 - ( i \% 9)} \cdot \lfloor \frac{i}{9} + 1 \rfloor ^ {i \% 9}} \approx 6.6 \cdot 10^{3238}
+\end{equation}
+
+Möglichkeiten für Sudokus übrig.Dabei bedeutet $\lfloor k \rfloor$ die größte Ganzzahl, die kleiner oder gleichgroß ist wie $k$, und $a \% b$ bedeutet $a$ modulo $b$, also der Rest, der bei einer ganzzahligen Division übrigbleibt (wie in der Grundschule: $5 / 2 = 2$ Rest $1$).
+
+\section{Lösungsverfahren}
+In diesem Abschnitt werde ich verschiedene, zum Teil ausgefallene oder sehr abstrakte Lösungsmethoden vorstellen. Bei den meisten ist eine Implementierung in C oder Matlab beigefügt.
+\subsection{Brute Force}
+Das einfachste aller Lösungsverfahren ist die Holzhammermethode. Man geht einfach alle Kombinationen von Symbolen in den noch freien Feldern durch, und hört damit auf, wenn die Lösung gefunden ist. Das erfordert keinerlei Scharfsinn, lediglich Geduld. Ein durchschnittliches Sudoku der Größe 9 hat zwischen 40 und 50 freie Felder, das macht ungefähr $9^{50} = 5.1 \cdot 10^{47}$ verschiedene Kombinationen. Das ist aber selbst für einen Computer zuviel. Jedoch findet dieses Verfahren auch eine Lösung, falls das Sudoku mehrere Lösungen besitzt (und damit genaugenommen nach unserer Definition kein Sudoku mehr ist). Man kann außerdem die Durchsuchung der meisten falschen Kombinationen vermeiden, indem man eine Technik namens Backtracking anwendet.
+\subsection{Backtracking}
+\label{BT}
+Eine immer noch sehr aufwendige Methode ist die Backtrackingmethode. Zur Vereinfachung der Darstellung nummerieren wir die Symbole durch von 1 bis n. Man beginnt im ersten leeren Feld.
+\begin{enumerate}
+	\item Falls das Feld leer ist, schreibe Symbol $1$ hinein
+	\item Falls das Feld Symbol $n$ enthält, gehe zum vorherigen freien Feld zurück
+	\item Entferne das Symbol $k$ aus dem Kästchen und schreibe Symbol $k + 1$ hinein
+	\item Falls sich ein Widerspruch ergibt beginne bei 1.
+	\item Falls keine weiteren freien Felder vorhanden sind, ist das Sudoku gelöst
+	\item Gehe zum nächsten freien Feld und beginne bei 1.
+\end{enumerate}
+Man kann diese Methode mit den Regeln aus \ref{HM} verbinden, um weitere falsche Kombinationen zu eliminieren. Es bietet sich an, dieses Verfahren durch einen rekursiven Funktionsaufruf zu programmieren. Diese Methode scheint bei weitem die weitverbreitetste zu sein. Auch dieses Verfahren findet eine Lösung, falls die Aufgabe nicht eindeutig lösbar ist.
+\subsection{Mensch}
+\label{HM}
+Der weiterer naheliegender Gedanke ist, einfach dem Computer beizubringen, die Methoden anzuwenden, die man selbst beim Lösen eines Sudokus benutzt. Die meisten Leute schreiben sich in noch leere Kästchen die Zahlen, die noch dort stehen könnten, und versuchen so lange Möglichkeiten zu eliminieren, bis nur noch eine Zahl dort stehen kann. Genau das lassen wir jetzt einen Computer machen. Als horizontalen oder vertikalen Nachbarblock bezeichnen wir Blöcke, die in der gleichen Zeile bzw. Spalte stehen. Als Einheit bezeichnen wir eine Spalte, eine Zeile oder einen Block. Um über alle Möglichkeiten Buch zu führen, die noch möglich sind, verwenden wir für jedes Feld des Sudokus eine Liste, in der alle für dieses Feld noch möglichen Symbole vermerkt sind. Wenn nur noch eine Möglichkeit übrig ist, kann das Symbol in das Feld geschrieben werden. Der einfachste Regelsätze ist dieser:
+\begin{itemize}
+	\item Eliminiere bei einem Feld alle Möglichkeiten, deren Symbole in derselben Einheit bereits vorhanden sind.
+\end{itemize}
+Es ist nicht ohne weiteres klar, dass man mit diesem Regelsatz alle Sudokus lösen kann, die eindeutig lösbar sind. Es ist auch tatsächlich nicht der Fall. Mit diesen Regeln kann man nur die einfachsten Sudokus lösen. Wir können weitere Regeln dazu nehmen:
+\begin{itemize}
+	\item Sind in einer Einheit zwei Felder, in die genau die gleichen zwei Symbole als Möglichkeiten verbleiben, so müssen diese beiden Symbole in diesen beiden Feldern platziert werden, jede weitere Möglichkeit für diese Symbole in dieser Einheit kann eliminiert werden.
+	\item Sind in einer Einheit $n$ Felder, in die genau die gleichen $n$ Symbole als Möglichkeiten verbleiben, so müssen diese $n$ Symbole in diesen Feldern platziert werden, jede weitere Möglichkeit für diese Symbole in dieser Einheit kann eliminiert werden.
+	\item Sind alle verbleibenden Möglichkeiten für ein Symbol in einem Block in der selben Spalte (Zeile) zu finden, so können Möglichkeiten für dieses Symbol in dieser Spalte (Zeile) außerhalb des Blocks eliminiert werden.
+\end{itemize}
+Jedoch kann man mit auch mit diesen Regeln nicht alle Sudokus lösen. Es gibt sehr viele weitere z.T. sehr komplizierte Regeln, aber mir ist kein Regelsatz bekannt, der alle Sudokus lösen kann. Deshalb ist es erforderlich, dem wiederholten Anwenden der Regeln eine abschließende Backtrackingstufe (siehe \ref{BT}) oder ein anderes sicher lösendes Verfahren anzuschließen. Üblicherweise bleiben dann nur noch sehr wenige bis gar keine Möglichkeiten übrig, so dass das Backtracking sehr schnell abläuft. Außerdem ist das Programmieren dieser Regeln sehr aufwendig und kompliziert, und fehleranfällig.
+
+\subsection{Monte Carlo Methode}
+\label{MC}
+Dieses Verfahren baut auf einer Methode auf, die ursprünglich in der statistischen Physik entwickelt wurde, der sogenannte Monte Carlo Methode. Genauer gesagt ist es inspiriert vom Metropolis Algorithmus, der u.a. mit dem Ising Modell zum Simulieren von Magneten verwendet werden kann. Dabei wird ein Magnet als eine Ansammlung von kleinen Magneten betrachtet, deren magn. Moment (also sowas wie die Richtung der N-S Achse eines Stabmagneten) entweder nach oben oder unten zeigen kann. Ein solcher Elementarmagnet (auch Spin genannt) wechselwirkt nur mit den benachbarten Spins. Die Gesamtenergie dieses System (also des großen Magneten) und dessen Magnetfeld hängen dann von der Stellung aller Spins in einer bestimmten Art und Weise ab. Um das Magnetfeld bei einer bestimmten Temperatur zu bestimmen macht man folgendes. Man baut die Spins im Computer nach und sucht sich in jedem Schritt einen davon aus, dreht ihn um, und rechnet aus, wie sich dadurch die Gesamtenergie ändert. Mit einer gewissen Wahrscheinlichkeit, die von der Energieänderung und der Temperatur abhängt, lässt man den Spin so, sonst dreht man ihn wieder um. Von solchen Schritten macht man sehr sehr viele. Denn das ist alles so ausgetüftelt, dass sich nach einiger Zeit das System einschaukelt und das Feld des simulierten Modellmagneten recht gut mit dem eines echten Magneten bei der Temperatur übereinstimmt.
+
+Doch man kann mit dieser Methode auch Sudokus lösen. Man geht dabei ganz ähnlich vor. Da aber der Begriff Energie für ein Sudoku nicht definiert ist, müssen wir den zuerst definieren. Die Energie des Sudokus soll ein Maß dafür sein, wie 'richtig' unser Sudoku ist.
+
+\begin{definition}{Energie eines Sudokus}
+\begin{eqnarray*}
+	E_{MC}(S) : \mathbb{S} & \to & \mathbb{N} \\
+	S & \mapsto & \sum_{k=0}^n \sum_{i=0}^n \left[ | 1 - \sum_{j=0} \delta_{S_{ij}k} | + | 1 - \sum_{j=0} \delta_{S_{ji}k} | + | 1 - \sum_{j=0} \delta_{S_{b(i,j)}k} | \right]
+\end{eqnarray*}
+\end{definition}
+
+Das $\delta_{ij}$ ist das Kroneckerdelta. Dieser etwas längliche Ausdruck definiert eine Zahl, die man für jedes vollständig  (dabei aber nicht unbedingt richtig) ausgefüllte Sudoku errechnen kann. Jede Spalte, jede Zeile und jeder Block werden untersucht, und die Anzahlen der dort vorhandenen Symbole werden gezählt. Für jedes Symbol, das nicht genau einmal vorkommt, gibt es die Differenz zwischen Anzahl und 1 als Strafpunkte. Die Summe der Strafpunkte für alle Zeilen, Spalten und Blöcke ergibt die Energie des Sudokus. Wenn jedes Symbol in jeder Zeile, Spalte und jedem Block genau einmal vorkommt, dann ist die Energie 0 und genau dann ist das Sudoku gelöst. Für nicht ganz richtige Sudokus ist die Energie größer als 0. Jetzt wissen wir, was Energie für ein Sudoku bedeuten soll, und können mit dem Lösen des Sudokus beginnen.
+
+\begin{enumerate}
+	\item Bestimme eine Temperatur $T \in \mathbb{R}^+$
+	\item Fülle die leeren Felder auf beliebige Art und Weise mit den fehlenden Symbolen. Es müssen nach diesem Schritt n Symbole jeder Art im Sudoku $S$ vorhanden sein.
+	\item Berechne die Energie $E_1 = E_{MC}(S)$ des Sudokus.
+	\item Falls $E_1 = 0$ ist, beende den Algorithmus
+	\item Wähle zwei der nicht vorgegebenen Felder $S_{i_1j_1}, S_{i_2j_2}$ aus
+	\item Vertausche die Symbole in $S_{i_1j_1}, S_{i_2j_2}$
+	\item Berechne die Energie $E_2 = E_{MC}(S)$ des Sudokus.
+	\item Falls $E_2 < E_1$ gehe zu 3.
+	\item Erzeuge eine Zufallszahl $r \in [0,1]$
+	\item Falls $r > e^{\frac{E_1 - E2}{T}}$ vertausche die Symbole in $S_{i_1j_1}, S_{i_2j_2}$ erneut
+	\item Gehe zu 3.
+\end{enumerate}
+
+Wir vertauschen also immer Symbole, und falls unser Sudoku dadurch richtiger wird, lassen wir es so. Falls es flascher wird, tauschen wir meistens zurück, aber manchmal akzeptieren wir den Zug auch. Das wir auch Züge akzeptieren, die die Energie erhöhen, hört sich zwar erstmal doof an, aber es kann durchaus passieren, dass wir uns in einem lokalen Energieminimum befinden, also einer Konfiguration, bei der sich die Energie bei jeder Vertauschung von 2 Symbolen erhöht, die aber dennoch nicht richtig ist. Damit wir da wieder rauskommen, müssen wir das Sudoku manchmal falscher machen. Die Temperatur ist ein Parameter, der steuert, wie oft wir solche Züge akzeptieren. Je niedriger die Temperatur, desto schwieriger kommt man aus lokalen Minima wieder raus. Wenn man die Temperatur jedoch zu groß macht, dann werden zu viele falsche Züge akzeptiert. Der Algorithmus wird dann praktisch zu einem Brute Force Ausprobieren.
+
+Ein durchschnittliches Sudoku der Größe 9 hat ungefähr 50 leere Felder. Der Algorithmus muss also aus $50! = 3 \cdot 10^{64}$ verschiedenen Konfigurationen die eine richtige herausfinden, indem er immer zwei Symbole vertauscht, und sich dann überlegt, ob das jetzt besser ist als vorher. Da der Algorithmus nichtdeterministisch ist, also Zufallselemente enthält, muss er strenggenommen keine Lösung finden. In meinen Tests tat er es jedoch immer, und das erstaunlicherweise sogar recht schnell. Nie hat er mehr als $6 \cdot 10 ^ 5$ Schritte gebraucht, um die Lösung zu finden, in Anbetracht des riesigen Suchraums eine beachtliche Leistung.
+
+Eine Interessante Fähigkeit hat er aber noch. Wenn es für das gegebene Sudoku keine eindeutige Lösung findet, findet er eine (also zumindest in der Praxis). Und zwar bei jedem Durchgang eine andere, da ja Zufall im Spiel ist. Das funktioniert sogar, wenn man ihm ein ganz leeres Gitter vorwirft, ohne jegliche Vorgaben.
+
+Folgendes C Programm implementiert diese Methode.
+
+\begin{verbatim}
+//Sudoku Solver using the Metropolis Algorithm
+//author: Johannes at ist-dein-freund dot de
+//04-24-2007
+
+#include <stdio.h>
+#include <limits.h>
+#include <math.h>
+
+/*nasty global vars*/
+int tbl[81];
+int swap_idxs[81];
+unsigned long int seed;
+
+/*LUTs for easy block access*/
+static const int bl_start[9]  = {0, 3, 6, 27, 30, 33, 54, 57, 60};
+static const int bl_offset[9] = {0, 1, 2, 9,  10, 11, 18, 19, 20};
+
+/*generate random integer number with a shift register PRNG*/
+unsigned long int rndi(){
+	seed = seed ^ (seed >> 15);
+	return seed = seed ^ (seed << 17);
+}
+
+float rndf(){
+	return ((float) rndi())/((float) ULONG_MAX);
+}
+
+void swap(int idx1,int idx2){
+		int tmp = tbl[idx1];
+		tbl[idx1] = tbl[idx2];
+		tbl[idx2] = tmp;
+}
+
+int energy(void){
+	int i,j;
+	int en = 0;
+	int row_count[10];
+	int col_count[10];
+	int bl_count[10];
+
+	for(i=0;i<9;i++){
+		for(j=0;j<10;j++) row_count[j] = col_count[j] = bl_count[j] = 0;
+		/*count number of symbol in row/col/block i*/
+		for(j=0;j<9;j++){
+			row_count[tbl[9*i + j]]++;
+			col_count[tbl[i + 9*j]]++;
+			bl_count[tbl[bl_start[i] + bl_offset[j]]]++;
+		}
+		/*calculate energy as number of symbols that occure not exactly one time in col/row/block*/
+		for(j=1;j<10;j++){
+			en += (row_count[j] == 0) ? 1 : row_count[j] - 1;
+			en += (col_count[j] == 0) ? 1 : col_count[j] - 1;
+			en += (bl_count[j] == 0)  ? 1 :  bl_count[j] - 1;
+		}
+	}
+	return en;
+}
+
+int main(void){
+	/*Parameters*/
+	float temp = 0.6;
+	seed = 2147483647;
+
+	int i,j,k,c;
+	int count[10];
+
+	/*read in hints, > 0 for fixed symbols, 0 for unknown symbols*/
+	for(i=0;i<81;i+=9)
+		scanf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",&tbl[i],&tbl[i + 1],&tbl[i + 2],&tbl[i + 3],&tbl[i + 4],&tbl[i + 5],&tbl[i + 6],&tbl[i + 7],&tbl[i + 8]);
+
+	/*fill in the missing symbols*/
+	for(i=0;i<10;i++) count[i] = 9;
+	for(i=0;i<81;i++) count[tbl[i]]-- ;	
+
+	i = 1;
+	k = 0;
+
+	for(j=0;j<81;j++){
+		if(tbl[j] == 0){
+			swap_idxs[k++] = j;
+			while(count[i] == 0 && i <10) i++;
+			tbl[j] = i;
+			count[i]--;
+		}
+	}
+
+	c = 0;
+
+	int en1 = energy();
+
+	/*do MC steps until sudoku is solved*/
+	while(en1){
+		/*choose 2 indices to swap*/
+		int idx1 = swap_idxs[(rndi() % k)];
+		int idx2 = swap_idxs[(rndi() % k)];
+
+		swap(idx1,idx2);
+
+		int en2 = energy();
+
+		/*reject*/
+		if(en2>en1 && exp((en1 - en2)/temp) < rndf()){
+			swap(idx1,idx2);
+		} else {
+			en1 = en2;
+		}
+		c++;
+	}
+
+	printf("Solution found after %d Steps:\n",c);
+	for(i=0;i<81;i+=9)
+		printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",tbl[i],tbl[i + 1],tbl[i + 2],tbl[i + 3],tbl[i + 4],tbl[i + 5],tbl[i + 6],tbl[i + 7],tbl[i + 8]);
+}
+\end{verbatim}
+
+\subsection{Sudokus als Optimierungsproblem}
+\label{OPT}
+
+Auch wenn der Metropolisalgortihmus, der im letzten Abschnitt zum Lösen von Sudokus missbraucht wurde, ursprünglich für die Simulation von thermodynamischen Systemen in der Physik entwickelt wurde, kann man ihn auch in anderen Bereichen sinnvoll anwenden. Es handelt sich nämlich beim Metropolisalgorithmus um einen Optimierungsalgorithmus, der zum lösen von Optimierungsproblemen verwendet werden kann.
+
+\begin{definition}{Optimierungsproblem}
+Sei $f(x_1,\dots,x_n): \mathbb{R}^n \to \mathbb{R}$ die sogenannte Zielfunktion und $A\vec{x} \stackrel{=}{\le} b$ n Nebenbedingungen an die $x_i$. Die Suche nach den Werten von $x_1,\dots,x_n$, die den Nebenbedingungen genügen und für die $f(x_1,\dots,x_n)$ maximal wird, bezeichnet man als Optimierungsproblem.
+\end{definition}
+
+In diesem Lichte betrachtet handelt es sich bei dem, was wir im letzten Abschnitt gemacht haben, um die Lösung eines Optimierungsproblems. Die Zielfunktion war die negative Energie. Zur Lösung haben wir den Metropolisalgorithmus verwendet. Jedoch kann man, sobald man erkannt hat, dass es sich beim Lösen eines Sudokus nur um die Optimierung einer geeigneten Zielfunktion handelt, eine ganze Palette von gut verstandenen Verfahten für diese Aufgabe verwenden. Für die meisten Optimierungsverfahren sind jedoch gewisse Forderungen an die Zielfunktion verbunden.
+
+\subsection{Newtonverfahren}
+\label{NW}
+
+Beginnen wir mit dem Newtonverfahren. Das ist vermutlich einigen aus der Schule bekannt und funktioniert in für Funktionen mit einer Variablen folgendermaßen. Für Zielfunktionen von mehreren Variablen ist das Prinzip das gleiche.
+
+Gegeben sei eine Zielfunktion $f \in C^2: \mathbb{R} \to \mathbb{R}$, die zweimal stetig differenzierbar ist. Wir raten eine jetzt einen Stelle $x_0 \in \mathbb{R}$ in der Nähe der Extremstelle, und rechnen rekursiv aus
+
+\begin{equation}
+	x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}
+\end{equation}
+
+Wir rechnen so lange Schritte, bis $f'(x_n) < TOL$ ist, $TOL$ ist dabei sehr sehr klein. Dann haben wir bei $x_n $ ungefähr ein Extremum gefunden. Das funktioniert aber leider nicht immer, der geratene Wert $x_0$ muss schon relativ nahe an der Extremstelle liegen, sonst entfernt sich $x_{n}$ immer weiter davon.
+
+Da für die Zielfunktion zweimal stetig differenzierbar sein muss, damit wir die zweite Ableitung ausrechnen können, müssen wir eine neue Zielfunktion definieren. Die Energie aus \ref{MC} ist nicht differenzierbar, deshalb können wir die nicht nehmen. Deshalb nehmen wir die folgende
+
+\begin{definition}{Energiefunktion für das Newtonverfahren}
+\begin{eqnarray*}
+	E_N: \mathbb{S}(n) & \to & \mathbb{R} \\
+	S & \mapsto & \sum_{i=1}^n \left[ (\sum_{j=1}^n S_{ij} - j)^2 + (\sum_{j=1}^n S_{ji} -  j)^2 + (\sum_{j=1}^n S_{b(i,j)} - j)^2 \right]
+\end{eqnarray*}
+\end{definition}
+
+Zu einem gegebenen zu lösenden Sudoku
+
+Für ein mehrdimensionales Problem benötigen wir den Gradienten $\nabla E_N$ und die Hessematrix $H_{E_N}$, diese entsprechen der ersten und zweiten Ableitung im eindimensionalen Fall. Man findet heraus, dass
+
+% \begin{eqnarray}
+% \end{eqnarray}
+	
+
+
+
+\subsection{spezielle Verfahren zur Lösung von quadratischen Programmen}
+
+\subsection{Sudoku mit tanzenden Links}
+
+\subsection{Neuronale Netze}
+
+\section{Sudokugeneratoren}
+
+\subsection{evolutionäre Programmierung}
+
+\section{Schwierigkeit}
+
+\section{weiterführende Literatur und Quellen}
+\subsection{weiterführende Literatur}
+\subsection{Quellen}
+
+\end{document}	

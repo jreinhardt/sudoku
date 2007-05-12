@@ -1,0 +1,5 @@
+quellen:
+
+
+Sudoku Lösen mit Dancing Links
+http://sudokugarden.de/de/loesen/dancing-links
