@@ -2,6 +2,7 @@ function res = su_newton(hint)
 %How Sir Isaac Newton would solve a Sudoku
 %Works only for sudokus with few empty fields or very good initial values
 pos = find(hint==0);
+length(pos)
 
 %Arbitrary starting values
 val = 9*rand(1,length(pos));
@@ -11,14 +12,19 @@ if(0)
 	val = fminsearch(@(x) norm(su_derive(hint,pos,x),2),val);
 else
 	%Newton
+	df = 1;
 
+	while(max(abs(df)) > 1e-30)
+
+		val = 9*rand(1,length(pos))
 	
-	df = su_derive(hint,pos,val);
-	
-	while(max(abs(df)) > 1e-30 && max(abs(df)) < 1e30)
-		val = val - df/6;
 		df = su_derive(hint,pos,val);
-		max(abs(df))
+		
+		while(max(abs(df)) > 1e-30 && max(abs(df)) < 1e10)
+			val = val - df'/6;
+			df = su_derive(hint,pos,val);
+			max(abs(df));
+		end
 	end
 end
 

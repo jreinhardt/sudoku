@@ -26,9 +26,9 @@ float rndf(){
 }
 
 void swap(int idx1,int idx2){
-		int tmp = tbl[idx1];
-		tbl[idx1] = tbl[idx2];
-		tbl[idx2] = tmp;
+	int tmp = tbl[idx1];
+	tbl[idx1] = tbl[idx2];
+	tbl[idx2] = tmp;
 }
 
 int energy(void){
@@ -46,7 +46,34 @@ int energy(void){
 			col_count[tbl[i + 9*j]]++;
 			bl_count[tbl[bl_start[i] + bl_offset[j]]]++;
 		}
-		/*calculate energy as number of symbols that occure not exactly one time in col/row/block*/
+		/*calculate energy as number of symbols that occure not 
+		exactly one time in col/row/block*/
+		for(j=1;j<10;j++){
+			en += (row_count[j] == 0) ? 1 : row_count[j] - 1;
+			en += (col_count[j] == 0) ? 1 : col_count[j] - 1;
+			en += (bl_count[j] == 0)  ? 1 :  bl_count[j] - 1;
+		}
+	}
+	return en;
+}
+
+int energy2(void){
+	int i,j;
+	int en = 0;
+	int row_count[10];
+	int col_count[10];
+	int bl_count[10];
+
+	for(i=0;i<9;i++){
+		for(j=0;j<10;j++) row_count[j] = col_count[j] = bl_count[j] = 0;
+		/*count number of symbol in row/col/block i*/
+		for(j=0;j<9;j++){
+			row_count[tbl[9*i + j]]++;
+			col_count[tbl[i + 9*j]]++;
+			bl_count[tbl[bl_start[i] + bl_offset[j]]]++;
+		}
+		/*calculate energy as number of symbols that occure not 
+		exactly one time in col/row/block*/
 		for(j=1;j<10;j++){
 			en += (row_count[j] == 0) ? 1 : row_count[j] - 1;
 			en += (col_count[j] == 0) ? 1 : col_count[j] - 1;
@@ -66,7 +93,9 @@ int main(void){
 
 	/*read in hints, > 0 for fixed symbols, 0 for unknown symbols*/
 	for(i=0;i<81;i+=9)
-		scanf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",&tbl[i],&tbl[i + 1],&tbl[i + 2],&tbl[i + 3],&tbl[i + 4],&tbl[i + 5],&tbl[i + 6],&tbl[i + 7],&tbl[i + 8]);
+		scanf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",&tbl[i],
+		&tbl[i + 1],&tbl[i + 2],&tbl[i + 3],&tbl[i + 4],
+		&tbl[i + 5],&tbl[i + 6],&tbl[i + 7],&tbl[i + 8]);
 
 	/*fill in the missing symbols*/
 	for(i=0;i<10;i++) count[i] = 9;
@@ -105,9 +134,12 @@ int main(void){
 			en1 = en2;
 		}
 		c++;
+		printf("c:%d en:%d\n",c,en1);
 	}
 
 	printf("Solution found after %d Steps:\n",c);
 	for(i=0;i<81;i+=9)
-		printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",tbl[i],tbl[i + 1],tbl[i + 2],tbl[i + 3],tbl[i + 4],tbl[i + 5],tbl[i + 6],tbl[i + 7],tbl[i + 8]);
+		printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n",tbl[i],
+		tbl[i + 1],tbl[i + 2],tbl[i + 3],tbl[i + 4],
+		tbl[i + 5],tbl[i + 6],tbl[i + 7],tbl[i + 8]);
 }
