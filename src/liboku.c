@@ -59,9 +59,17 @@ static int get_row(oku_sod* sod, int row, int pos){
 	return get_xy(sod,pos,row);
 }
 
+static void set_row(oku_sod* sod,int row, int pos, int val){
+	set_xy(sod,pos,row,val);
+}
+
 //gets the posth element of the colth column
 static int get_col(oku_sod* sod, int col, int pos){
 	return get_xy(sod,col,pos);
+}
+
+static void set_col(oku_sod* sod, int col, int pos, int val){
+	set_xy(sod,col,pos,val);
 }
 
 //gets the posth element of the blkth block
@@ -71,6 +79,10 @@ static int get_blk(oku_sod* sod, int blk, int pos){
 	} else printf("Error! Invalid Input in get_blk. blk=%d, pos=%d\n",blk,pos);
 
 	return 0;
+}
+
+static void set_blk(oku_sod* sod, int blk, int pos, int val){
+	set_idx(sod,sod->blkidx[blk][pos],val);
 }
 
 static void unk_find(oku_sod* sod){
@@ -193,7 +205,7 @@ static int fitness(oku_sod* sod){
 			blk[i][get_blk(sod,i,j)]++;
 		}
 	for(i=0;i<size;i++)
-		for(j=1;j<size;j++){
+		for(j=1;j<size+1;j++){
 			score += row[i][j] == 0 ? 1 : row[i][j] - 1;
 			score += col[i][j] == 0 ? 1 : col[i][j] - 1;
 			score += blk[i][j] == 0 ? 1 : blk[i][j] - 1;
@@ -221,12 +233,12 @@ static int unsolved(oku_sod* sod){
 			blk[i][get_blk(sod,i,j)]++;
 		}
 	for(i=0;i<size;i++)
-		for(j=1;j<size;j++){
-			score += row[i][j] > 1? 1: 0;
-			score += col[i][j] > 1? 1: 0;
-			score += blk[i][j] > 1? 1: 0;
-			if(score>0) return 1;
+		for(j=1;j<size+1;j++){
+			score += row[i][j] > 1 ? : 0;
+			score += col[i][j] > 1 ? printf("%d %d\n",i,j): 0;
+			score += blk[i][j] > 1 ? 1 : 0;
 		 }
+	printf("%d\n",score);
 	return score;
 }
 
@@ -279,15 +291,82 @@ void oku_mcsol(oku_sod* sod, double temp){
 			set_idx(sod,idx1,get_idx(sod,idx2));
 			set_idx(sod,idx2,tmp);
 		} else fit1 = fit2;
-//		printf("Step:%d Fitness: %d\n",num,fit1);
 		num++;
+		if(num % 2000 == 0)
+			printf("Step:%d Fitness: %d\n",num,fit1);
+			
 	}
 	printf("Solution found after %d MC Steps\n",num);
 
 };
 
-//simple backtracking
+//structured monte carlo
+//maintains correct blockstructure doesnt work very good
+void oku_mcblksol(oku_sod* sod, double temp){
+	int i,j,k,val;
+	int fit1, fit2, num,blk,idx1,idx2,tmp;
+	int size = sod->size;
+	int blkunk[size],cnt[size];
+	int blkunkidx[size][size];
 
+	for(i=0;i<size;i++){
+		blkunk[i] = 0;
+		for(j=0;j<size;j++)
+			cnt[j] = 0;
+
+		//find unknowns for every block
+		for(j=0;j<size;j++){
+			val = get_blk(sod,i,j);
+			if(val == 0){
+				blkunkidx[i][blkunk[i]++] = j;
+			} else {
+				if(cnt[val-1] == 0){
+					cnt[val-1] = 1;
+				} else printf("Fehler in oku_mcblocksol: Invalid hint: %d\n",val);
+			}
+		}
+
+		//fill them
+		k=0;
+		for(j=0;j<size;j++)
+			if(cnt[j] == 0)
+				set_blk(sod,i,blkunkidx[i][k++],j+1);
+	}
+
+	oku_sod_print(sod);
+
+	fit1 = fitness(sod);
+	num = 0;
+	while(fit1){
+		//choose block and two indizes inside
+		blk = rndi() % size;
+		idx1 = rndi() % blkunk[blk];
+		idx2 = rndi() % blkunk[blk];
+
+		//swap
+		tmp = get_blk(sod,blk,idx1);
+		set_blk(sod,blk,idx1,get_blk(sod,blk,idx2));
+		set_blk(sod,blk,idx2,tmp);
+
+		fit2 = fitness(sod); 
+
+		if(fit2 > fit1 && exp((fit1 - fit2)/temp) < rndf()){
+			//swap back
+			tmp = get_blk(sod,blk,idx1);
+			set_blk(sod,blk,idx1,get_blk(sod,blk,idx2));
+			set_blk(sod,blk,idx2,tmp);
+		} else fit1 = fit2;
+		num++;
+		if(num % 2000 == 0)
+			printf("Step:%d Fitness: %d\n",num,fit1);
+	}
+
+}
+				
+
+
+
+//simple backtracking
 static int backtrack(oku_sod* sod, int level){
 	int i;
 	//not a correct solution, abort
