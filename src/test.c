@@ -35,6 +35,7 @@ int main(int argc, char** argv){
 	oku_mcsol(sod,0.5);
 //	oku_mcblksol(sod,0.5);
 //	oku_backtrack(sod);
+//	oku_ineldermeads(sod);
 	oku_sod_print(sod);
 
 	oku_sod_destroy(sod);
