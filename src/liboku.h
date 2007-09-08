@@ -18,6 +18,7 @@ void oku_sod_destroy(oku_sod* sod);
 //solver
 
 void oku_mcsol(oku_sod* sod, double temp);
+void oku_mcsol2(oku_sod* sod, double temp);
 void oku_backtrack(oku_sod* sod);
 
 //util

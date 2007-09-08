@@ -247,7 +247,7 @@ static int unsolved(oku_sod* sod){
 //solvers take a sod with hints and 0 for the unknowns and 
 //return a complete sod
 
-//monte carlo solver
+// first monte carlo solver, mildly constraint
 void oku_mcsol(oku_sod* sod, double temp){
 	int i,j,num,size = sod->size;
 	int cnt[size+1];
@@ -272,7 +272,7 @@ void oku_mcsol(oku_sod* sod, double temp){
 	fit1 = fitness(sod);
 	num=0;
 
-	while(fit1){
+	while(fit1 && num < 200000){
 		//choose 2 indices
 		idx1 = get_unkidx(sod,rndi() % get_numunk(sod));
 		idx2 = get_unkidx(sod,rndi() % get_numunk(sod));
@@ -292,8 +292,6 @@ void oku_mcsol(oku_sod* sod, double temp){
 			set_idx(sod,idx2,tmp);
 		} else fit1 = fit2;
 		num++;
-		if(num % 2000 == 0)
-			printf("Step:%d Fitness: %d\n",num,fit1);
 			
 	}
 	printf("Solution found after %d MC Steps\n",num);
@@ -363,7 +361,43 @@ void oku_mcblksol(oku_sod* sod, double temp){
 
 }
 				
+// completely unconstrained monte carlo
+void oku_mcsol(oku_sod* sod, double temp){
+	int i,j,num,size = sod->size;
+	int cnt[size+1];
+	int fit1, fit2, idx1, idx2,tmp;
 
+	//refresh list of unknowns in sod
+	unk_find(sod);
+
+	//fill sudoku with missing symbols
+	for(i=0;i<get_numunk(sod);i++){
+		set_idx(sod,get_unkidx(sod,i),(rndi() % sod->size) + 1);
+	}
+
+	fit1 = fitness(sod);
+	num=0;
+
+	while(fit1 && num < 2000000){
+		//choose 2 indices
+		idx1 = get_unkidx(sod,rndi() % get_numunk(sod));
+
+		tmp = get_idx(sod,idx1);
+
+		set_idx(sod,idx1,(rndi() % sod->size) + 1);
+
+		fit2 = fitness(sod);
+
+		if(fit2 > fit1 && exp((fit1 - fit2)/temp) < rndf()){
+			//swap back
+			set_idx(sod,idx1,tmp);
+		} else fit1 = fit2;
+		num++;
+			
+	}
+	printf("Solution found after %d MC Steps\n",num);
+
+};
 
 
 //simple backtracking
