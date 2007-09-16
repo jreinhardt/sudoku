@@ -1,4 +1,4 @@
-#include "liboku.c"
+#include "liboku.h"
 #include <stdio.h>
 
 
@@ -8,9 +8,10 @@ int main(int argc, char** argv){
 	//TODO nicer
 	int i,j,in[16];
 
-	oku_sod* sod;
+	oku_sod* sod,*sod2;
 	//init sod
 	oku_sod_init(&sod,SUD_SIZE);
+	oku_sod_init(&sod2,SUD_SIZE);
 
 	/* read in sudoku*/
 	if(SUD_SIZE==9)
@@ -31,8 +32,11 @@ int main(int argc, char** argv){
 		}
 	}
 
+	oku_sod_copy(sod2,sod);
 
-	oku_mcsol(sod,0.8);
+
+	oku_mcsol(sod,0.7);
+	oku_mcsol2(sod2,0.7);
 //	oku_mcblksol(sod,0.5);
 //	oku_backtrack(sod);
 //	oku_ineldermeads(sod);
