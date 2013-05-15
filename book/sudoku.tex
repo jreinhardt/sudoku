@@ -8,9 +8,9 @@
 \usepackage{bibgerm}
 \usepackage{sudoku}
 \usepackage{listings}
+\usepackage[]{cite}
 
 \pagestyle{headings}
-
 %Placeholder
 \newenvironment{definition}[1]{\textbf{#1} \newline}{\newline}
 
@@ -47,11 +47,9 @@ Ein Sudoku der Größe $n = k^2$ ist ein $n \times n$ Plätze großes Gitter. Auf ei
 Eine Lösung der Größe $n = k^2$ ist ein $n \times n$ Plätze großes Gitter. Auf allen Plätzen sitzen Symbole aus einem $n$ Zeichen umfassenden Alphabet, in einer Weise, so dass in jeder Spalte, in jeder Reihe und in jedem der n disjunkten, $kxk$ Plätze großen Untergitter (auch Block genannt) jedes Symbol aus dem Alphabet genau einmal vorkommt.
 \end{definition}
 
-[Verfeinern, Menge für Sudokus, Menge für ausgefüllte Gitter, ,Menge für Lösungen]
-
 Hier werden wir eine Lösung als $S \in \mathbb{S}_n := {1,2,\dots n}^{n \times n}$ mit $ n = k^2 \in \mathbb{N}$ notieren. Das Feld in der iten Zeile und der jten Spalte werden mit $S_{ij}$ bezeichnet. Die Funktion $b(i,j): \mathbb{N}^2 \to \mathbb{N}^2 \quad (i,j) \mapsto ( k \cdot \lfloor \frac{i - 1}{k}\rfloor + \lfloor \frac{j - 1}{k} + 1 \rfloor, k \cdot (i -1  \% k) + (j- 1 \% k))$ hilft uns dabei, die $n$ Felder des iten Blocks einfach zu adressieren.
 
-Üblicherweise werden als Alphabet bei Größen bis 9 die arabischen Ziffern verwendet, für Größe 5 die römischen Buchstaben, und für größere Sudokus eine Mischung.
+Üblicherweise werden als Alphabet bei Größen bis 9 die arabischen Ziffern verwendet, für Größe 25 die römischen Buchstaben, und für größere Sudokus eine Mischung.
 
 \begin{figure}[h]
 \begin{sudoku}
@@ -69,7 +67,7 @@ Hier werden wir eine Lösung als $S \in \mathbb{S}_n := {1,2,\dots n}^{n \times n
 \end{figure}
 
 \section{Anzahl Sudokus}
-Eine sehr grobe obere Schranke für die Anzahl der Sudokus kann man auch errechnen. Man weiß, dass ein Sudoku mit 17 festgelegten Symbolen eindeutig lösbar sein kann, mit 15 jedoch nicht mehr. Das heißt, dass es nur Sudokus mit 16 bis 80 vorgegebenen Symbolen geben kann. Für $n \in {16,17,18,\dots 80}$ vorgegebene Symbolen gibt es höchstens $\frac{81!}{n!}$ Möglichkeiten, diese auf die 81 Plätze zu verteilen. 
+Eine sehr grobe obere Schranke für die Anzahl der Sudokus kann man auch errechnen. Man weiß, dass ein Sudoku mit 17 festgelegten Symbolen eindeutig lösbar sein kann, mit 15 jedoch nicht mehr. Das heißt, dass es nur Sudokus mit 16 bis 80 vorgegebenen Symbolen geben kann. Für $n \in {16,17,18,\dots 80}$ vorgegebene Symbolen gibt es höchstens $\frac{81!}{n!}$ Möglichkeiten, diese auf die 81 Plätze zu verteilen.
 \begin{equation}
 	Z = \sum_{n=16}^{80} \frac{81!}{n!} \approx 2.94 \cdot 10^{107}
 \end{equation}
@@ -81,23 +79,16 @@ Das macht $\cdot \lfloor \frac{n}{9} \rfloor ^{ 9 - ( n \% 9)} \cdot \lfloor \fr
 Möglichkeiten für Sudokus übrig.Dabei bedeutet $\lfloor k \rfloor$ die größte Ganzzahl, die kleiner oder gleichgroß ist als $k$, und $a \% b$ bedeutet $a$ modulo $b$, also der Rest, der bei einer ganzzahligen Division übrigbleibt (wie in der Grundschule: $5 / 2 = 2$ Rest $1$). Wir haben damit unsere Schranke zwar nur 6\% gedrückt, aber in absoluten Zahlen entspricht das einer unüberschaubar großen Menge an Sudokus.
 
 \section{Anzahl Lösungen}
-Einfacher als die Anzahl der Sudokus ist die Anzahl der Lösungen. Für Lösungen der Größe 4 ist die Anzahl sogar recht einfach auszurechnen. Wir gehen blockweise vor. Zuerst der linke oberer Block. Es gibt $4!$ Möglichkeiten 4 Symbole auf 4 Plätze zu verteilen. Dadurch werden im oberen rechten und unteren linken Block einige der Möglichkeiten eliminiert. Es fehlen pro Zeile bzw. Spalte noch zwei Symbole, die man jeweils vertauschen kann. Also pro Block 4 Möglichkeiten. Der untere rechte Block ist damit schon vollständig festgelegt. Das macht insgesamt höchstens $4! \cdot 4 \cdot 4 = 384$ Lösungen. Davon sind nochmal einige gleich, so dass es insgesamt nur $4! \cdot 4 \cdot 3 = 288$ Lösungen gibt [herzberger]. Sudokus der Größe 4 gibt es deutlich mehr, da zu jeder Lösung mehrere Sudokus existieren.
+Einfacher als die Anzahl der Sudokus ist die Anzahl der Lösungen. Für Lösungen der Größe 4 ist die Anzahl sogar recht einfach auszurechnen. Wir gehen blockweise vor. Zuerst der linke oberer Block. Es gibt $4!$ Möglichkeiten 4 Symbole auf 4 Plätze zu verteilen. Dadurch werden im oberen rechten und unteren linken Block einige der Möglichkeiten eliminiert. Es fehlen pro Zeile bzw. Spalte noch zwei Symbole, die man jeweils vertauschen kann. Also pro Block 4 Möglichkeiten. Der untere rechte Block ist damit schon vollständig festgelegt. Das macht insgesamt höchstens $4! \cdot 4 \cdot 4 = 384$ Lösungen. Davon sind nochmal einige gleich, so dass es insgesamt nur $4! \cdot 4 \cdot 3 = 288$ Lösungen gibt \cite{Herzberg07}. Sudokus der Größe 4 gibt es deutlich mehr, da zu jeder Lösung mehrere Sudokus existieren.
 
 Für die Anzahl der Lösungen der Größe 9 kann man jedoch sehr grobe Abschätzungen anstellen. Es gibt $ 9!^9 = 1.09 \cdot 10^{50}$ Möglichkeiten, die 81 Symbole auf die 9 Blöcke zu verteilen. Jedoch sind nicht alle davon gültige Lösungen. Es handelt sich also um eine obere Grenze. Eine bessere obere Grenze ist die Anzahl der Magischen Quadrate(?), die mit $\approx 5.525 \cdot 10^{27}$ deutlich niedriger liegt.
 
 Als untere Grenze kann man sich überlegen, dass es ja mindestens eine Lösung gibt, z.B. die aus der Sonntagszeitung von letzter Woche. Aus dieser Lösung lassen sich weitere Lösungen gewinnen, indem man gewisse Operationen durchführt. Zum Beispiel lassen sich die Symbole beliebig vertauschen, das ergibt schonmal $9! = 362880$ 'äquivalente' Möglichkeiten. Oder die Lösung lässt sich drehen und spiegeln, so kann man $4 \cdot 2 = 8$ unterschiedliche Varianten der Lösung gewinnen, wenn man davon ausgeht, dass die Lösung hinreichend asymmetrisch ist. Des weiteren lassen sich Zeilen und Spalten innerhalb der Blockgrenzen beliebig vertauschen, pro Dreierpaket ergibt das $6$, insgesamt also $6^6 = 46656$ weitere Lösungen. Eine beliebige Kombination dieser Maßnahmen erlaubt es uns also, aus einer gegebenen Lösung (man könnte z.B. die zu dem Sudoku in Tabelle 1 nehmen) $9! \cdot 8 \cdot 6^6 = 1.354 \cdot 10^{11}$ weitere Lösungen zu erzeugen. Also gibt es mindestens so viele Lösungen. Das ist unsere untere Schranke.
 
-In [Felgenhauer] haben Felgenhauer und Jarvis gezeigt, dass es genau $6.67 \cdot 10^{21}$ verschiedene Lösungen gibt. Dazu haben sie Symmetrien in den Lösungen ausgenutzt, um das Problem zu vereinfachen, ganz ähnlich wie wir es in unserer Abschätzung getan haben. Die restlichen Möglichkeiten haben sie in Klassen aufgeteilt, dort weitere Vereinfachungen durchgeführt, und die verbleibenden Möglichkeiten mit einem Computerprogramm nachgezählt.
-
-\section{Äquivalente Darstellungen}
-Man kann ein Sudoku auch als Graphenfärbungsproblem ansehen.
-
-\begin{definition}{Graph}
-Ein Graph ist ein Gebilde aus Knoten und Kanten blablabla
-\end{definition}
+In \cite{felgenhauer05} haben Felgenhauer und Jarvis gezeigt, dass es $6.67 \cdot 10^{21}$ verschiedene Lösungen gibt. Dazu haben sie Symmetrien in den Lösungen ausgenutzt, um das Problem zu vereinfachen, ganz ähnlich wie wir es in unserer Abschätzung getan haben. Die restlichen Möglichkeiten haben sie in Klassen aufgeteilt, dort weitere Vereinfachungen durchgeführt, und die verbleibenden Möglichkeiten mit einem Computerprogramm nachgezählt.
 
 \chapter{Lösungsverfahren}
-In diesem Abschnitt werde ich verschiedene, zum Teil ausgefallene oder sehr abstrakte Lösungsmethoden vorstellen. Bei den meisten ist eine Implementierung in C oder Matlab beigefügt.
+In diesem Abschnitt werde ich verschiedene, zum Teil ausgefallene oder sehr abstrakte Lösungsmethoden vorstellen.
 \section{Brute Force}
 Das einfachste aller Lösungsverfahren ist die Holzhammermethode. Man geht einfach alle Kombinationen von Symbolen in den noch freien Feldern durch, und hört damit auf, wenn die Lösung gefunden ist. Das erfordert keinerlei Scharfsinn, lediglich Geduld. Ein durchschnittliches Sudoku der Größe 9 hat zwischen 40 und 50 freie Felder, das macht ungefähr $9^{50} = 5.1 \cdot 10^{47}$ verschiedene Kombinationen. Das ist aber selbst für einen Computer zuviel. Jedoch findet dieses Verfahren auch eine Lösung, falls das Sudoku mehrere Lösungen besitzt (und damit genaugenommen nach unserer Definition kein Sudoku mehr ist). Man kann außerdem die Durchsuchung der meisten falschen Kombinationen vermeiden, indem man eine Technik namens Backtracking anwendet.
 \section{Backtracking}
@@ -113,7 +104,6 @@ Eine der einfachsten Methoden ist die Backtrackingmethode. Zur Vereinfachung der
 \end{enumerate}
 Man kann diese Methode mit den Regeln aus \ref{HM} verbinden, um weitere falsche Kombinationen zu eliminieren. Es bietet sich an, dieses Verfahren durch einen rekursiven Funktionsaufruf zu programmieren. Diese Methode scheint bei weitem die weitverbreitetste zu sein. Auch dieses Verfahren findet eine Lösung, falls die Aufgabe nicht eindeutig lösbar ist.
 
-Eine Beispielimplementierung befindet sich im Anhang bei \ref{code_bt}
 \section{Mensch}
 \label{HM}
 Der weiterer naheliegender Gedanke ist, einfach dem Computer beizubringen, die Methoden anzuwenden, die man selbst beim Lösen eines Sudokus benutzt. Die meisten Leute schreiben sich in noch leere Kästchen die Zahlen, die noch dort stehen könnten, und versuchen so lange Möglichkeiten zu eliminieren, bis nur noch eine Zahl dort stehen kann. Genau das lassen wir jetzt einen Computer machen. Als horizontalen oder vertikalen Nachbarblock bezeichnen wir Blöcke, die in der gleichen Zeile bzw. Spalte stehen. Als Einheit bezeichnen wir eine Spalte, eine Zeile oder einen Block. Um über alle Möglichkeiten Buch zu führen, die noch möglich sind, verwenden wir für jedes Feld des Sudokus eine Liste, in der alle für dieses Feld noch möglichen Symbole vermerkt sind. Wenn nur noch eine Möglichkeit übrig ist, kann das Symbol in das Feld geschrieben werden. Der einfachste Regelsätze ist dieser:
@@ -163,10 +153,6 @@ Ein durchschnittliches Sudoku der Größe 9 hat ungefähr 50 leere Felder. Der Algo
 
 Eine Interessante Fähigkeit hat er aber noch. Wenn es für das gegebene Sudoku keine eindeutige Lösung findet, findet er eine (also zumindest in der Praxis). Und zwar bei jedem Durchgang eine andere, da ja Zufall im Spiel ist. Das funktioniert sogar, wenn man ihm ein ganz leeres Gitter vorwirft, ohne jegliche Vorgaben.
 
-Eine Beispielimplementierung befindet sich im Anhang bei \ref{code_mc}.
-
-
-
 \section{Sudokus als Optimierungsproblem}
 \label{OPT}
 
@@ -177,68 +163,37 @@ Sei $f(x_1,\dots,x_n): \mathbb{R}^n \to \mathbb{R}$ die sogenannte Zielfunktion 
 \end{definition}
 
 In diesem Lichte betrachtet handelt es sich bei dem, was wir im letzten Abschnitt gemacht haben, um die Lösung eines Optimierungsproblems. Die Zielfunktion war die negative Energie. Zur Lösung haben wir den Metropolisalgorithmus verwendet. Jedoch kann man, sobald man erkannt hat, dass es sich beim Lösen eines Sudokus nur um die Optimierung einer geeigneten Zielfunktion handelt, eine ganze Palette von gut verstandenen Verfahten für diese Aufgabe verwenden. Für die meisten Optimierungsverfahren sind jedoch gewisse Forderungen an die Zielfunktion verbunden.
-
-\section{Newtonverfahren}
-\label{NW}
-
-Beginnen wir mit dem Newtonverfahren. Das ist vermutlich einigen aus der Schule bekannt und funktioniert in für Funktionen mit einer Variablen folgendermaßen. Für Zielfunktionen von mehreren Variablen ist das Prinzip das gleiche.
-
-Gegeben sei eine Zielfunktion $f \in C^2: \mathbb{R} \to \mathbb{R}$, die zweimal stetig differenzierbar ist. Wir raten eine jetzt einen Stelle $x_0 \in \mathbb{R}$ in der Nähe der Extremstelle, und rechnen rekursiv aus
-
-\begin{equation}
-	x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}
-\end{equation}
-
-Wir rechnen so lange Schritte, bis $f'(x_n) < TOL$ ist, $TOL$ ist dabei sehr sehr klein. Dann haben wir bei $x_n $ ungefähr ein Extremum gefunden. Das funktioniert aber leider nicht immer, der geratene Wert $x_0$ muss schon relativ nahe an der Extremstelle liegen, sonst entfernt sich $x_{n}$ immer weiter davon.
-
-Da für die Zielfunktion zweimal stetig differenzierbar sein muss, damit wir die zweite Ableitung ausrechnen können, müssen wir eine neue Zielfunktion definieren. Die Energie aus \ref{MC} ist nicht differenzierbar, deshalb können wir die nicht nehmen. Deshalb nehmen wir die folgende
-
-\begin{definition}{Energiefunktion für das Newtonverfahren}
-\begin{eqnarray*}
-	E_N: \mathbb{S}(n) & \to & \mathbb{R} \\
-	S & \mapsto & \sum_{i=1}^n \left[ (\sum_{j=1}^n S_{ij} - j)^2 + (\sum_{j=1}^n S_{ji} -  j)^2 + (\sum_{j=1}^n S_{b(i,j)} - j)^2 \right]
-\end{eqnarray*}
-\end{definition}
-
-Zu einem gegebenen Sudoku definieren wir die
-
-\begin{definition}{Ausfüllfunktion}
-\end{definition}
-
-Für ein mehrdimensionales Problem benötigen wir den Gradienten $\nabla E_N$ und die Hessematrix $H_{E_N}$, diese entsprechen der ersten und zweiten Ableitung im eindimensionalen Fall. Man findet heraus, dass
-
-% \begin{eqnarray}
-% \end{eqnarray}
-	
-
-
-
-\section{spezielle Verfahren zur Lösung von quadratischen Programmen}
-
-\section{Sudoku mit tanzenden Links}
-
-\section{Neuronale Netze}
-
-\chapter{Sudokugeneratoren}
-
-\section{evolutionäre Programmierung}
-
-\chapter{Schwierigkeit}
-
-
-
-
+%
+%\section{Newtonverfahren}
+%\label{NW}
+%
+%Beginnen wir mit dem Newtonverfahren. Das ist vermutlich einigen aus der Schule bekannt und funktioniert in für Funktionen mit einer Variablen folgendermaßen. Für Zielfunktionen von mehreren Variablen ist das Prinzip das gleiche.
+%
+%Gegeben sei eine Zielfunktion $f \in C^2: \mathbb{R} \to \mathbb{R}$, die zweimal stetig differenzierbar ist. Wir raten eine jetzt einen Stelle $x_0 \in \mathbb{R}$ in der Nähe der Extremstelle, und rechnen rekursiv aus
+%
+%\begin{equation}
+%	x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}
+%\end{equation}
+%
+%Wir rechnen so lange Schritte, bis $f'(x_n) < TOL$ ist, $TOL$ ist dabei sehr sehr klein. Dann haben wir bei $x_n $ ungefähr ein Extremum gefunden. Das funktioniert aber leider nicht immer, der geratene Wert $x_0$ muss schon relativ nahe an der Extremstelle liegen, sonst entfernt sich $x_{n}$ immer weiter davon.
+%
+%Da für die Zielfunktion zweimal stetig differenzierbar sein muss, damit wir die zweite Ableitung ausrechnen können, müssen wir eine neue Zielfunktion definieren. Die Energie aus \ref{MC} ist nicht differenzierbar, deshalb können wir die nicht nehmen. Deshalb nehmen wir die folgende
+%
+%\begin{definition}{Energiefunktion für das Newtonverfahren}
+%\begin{eqnarray*}
+%	E_N: \mathbb{S}(n) & \to & \mathbb{R} \\
+%	S & \mapsto & \sum_{i=1}^n \left[ (\sum_{j=1}^n S_{ij} - j)^2 + (\sum_{j=1}^n S_{ji} -  j)^2 + (\sum_{j=1}^n S_{b(i,j)} - j)^2 \right]
+%\end{eqnarray*}
+%\end{definition}
+%
+%Zu einem gegebenen Sudoku definieren wir die
+%
+%\begin{definition}{Ausfüllfunktion}
+%\end{definition}
+%
+%Für ein mehrdimensionales Problem benötigen wir den Gradienten $\nabla E_N$ und die Hessematrix $H_{E_N}$, diese entsprechen der ersten und zweiten Ableitung im eindimensionalen Fall. Man findet heraus, dass
+%
 \appendix
-\chapter{Implementierungen}
-\section{Backtracking}
-\label{code_bt}
-\lstinputlisting[basicstyle=\small, tabsize=2]{../src/backtrack.c}
-
-\section{Monte Carlo}
-\label{code_mc}
-\lstinputlisting[basicstyle=\small, tabsize=2]{../src/mcsudoku.c}
-
-
 
 \begin{figure}[h]
 \begin{sudoku}
@@ -255,6 +210,8 @@ Für ein mehrdimensionales Problem benötigen wir den Gradienten $\nabla E_N$ und 
 \caption{Ein recht schwieriges Sudoku}
 \end{figure}
 
-\chapter{weiterführende Literatur}
+\bibliography{sudoku}
+\bibliographystyle{plain}
+
 
 \end{document}	
