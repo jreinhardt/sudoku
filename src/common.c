@@ -109,7 +109,7 @@ void oku_sod_init(oku_sod** psod,int size){
 	sod->size = size;
 	str = sod->stride = size;
 	sod->field = (int*) malloc(sizeof(int)*str*size);
-	sod->blkidx = (int**) malloc(sizeof(int)*size);
+	sod->blkidx = (int**) malloc(sizeof(int*)*size);
 	for(i=0;i<size;i++)
 		sod->blkidx[i] = (int*) malloc(sizeof(int)*size);
 
@@ -215,11 +215,10 @@ int unsolved(oku_sod* sod){
 		}
 	for(i=0;i<size;i++)
 		for(j=1;j<size+1;j++){
-			score += row[i][j] > 1 ? : 0;
-			score += col[i][j] > 1 ? printf("%d %d\n",i,j): 0;
+			score += row[i][j] > 1 ? 1 : 0;
+			score += col[i][j] > 1 ? 1 : 0;
 			score += blk[i][j] > 1 ? 1 : 0;
 		 }
-	printf("%d\n",score);
 	return score;
 }
 
