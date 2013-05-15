@@ -1,8 +1,0 @@
-
-libsource = ['common.c','optim.c','constr.c']
-
-StaticLibrary('oku',libsource)
-
-testsource = ['test.c']
-
-Program('test',testsource,LIBS=['oku','m'],LIBPATH=['.'])

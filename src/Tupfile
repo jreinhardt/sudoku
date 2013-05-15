@@ -1,0 +1,5 @@
+: foreach *.c |> gcc -g -c %f -o %o |> %B.o {objs}
+
+: {objs} |> ar rcs %o %f |> liboku.a
+
+: test.o liboku.a |> gcc -o %o %f -lm |> test
