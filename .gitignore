@@ -1,9 +1,9 @@
-book/sudoku.aux
-book/sudoku.bbl
-book/sudoku.blg
-book/sudoku.log
-book/sudoku.pdf
-book/sudoku.toc
+docs/sudoku.aux
+docs/sudoku.bbl
+docs/sudoku.blg
+docs/sudoku.log
+docs/sudoku.pdf
+docs/sudoku.toc
 src/test
 src/*.o
 src/liboku.a
