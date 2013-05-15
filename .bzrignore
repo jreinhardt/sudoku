@@ -1,0 +1,11 @@
+src/test
+.tup
+src/alt/backtrack
+src/alt/gsudoku
+src/alt/mckurz
+src/alt/mckurzclean
+src/alt/mckurzok
+src/alt/mcsudoku
+src/alt/mcsudoku2
+src/alt/sudoku
+src/alt/sudokuveryshort
