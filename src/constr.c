@@ -22,6 +22,8 @@
 #include <malloc.h>
 #include "common.h"
 
+/*this file holds solvers using constraint programming techniques*/
+
 //simple backtracking
 static int backtrack(oku_sod* sod, int level){
 	int i;

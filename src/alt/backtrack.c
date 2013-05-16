@@ -16,6 +16,8 @@
  */
 #include <stdio.h>
 
+/* heavily commented backtracking solver */
+
 int fld[81];
 int unkwn[81];
 int numunkwn;

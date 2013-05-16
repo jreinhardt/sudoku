@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/* Sudoku solver for general blocksizes. Doesn't do backtracking, so it cannot solve everything */
 #include <stdio.h>
 
 #define BL_SIZE 3
@@ -63,66 +65,59 @@ void set(int x, int y, int val){
 }
 
 int main(void){
-int i,j,k;
-int hint;
+	int i,j,k;
+	int hint;
 
-/* FIXME Generate bidx*/
-for(i=0;i<BL_SIZE;i++)
-	for(j=0;j<BL_SIZE;j++){
-		boff[BL_SIZE*i+j] = j + SU_SIZE*i;
-		bidx[BL_SIZE*i+j] = BL_SIZE*(j + SU_SIZE*i);
-	}
+	for(i=0;i<BL_SIZE;i++)
+		for(j=0;j<BL_SIZE;j++){
+			boff[BL_SIZE*i+j] = j + SU_SIZE*i;
+			bidx[BL_SIZE*i+j] = BL_SIZE*(j + SU_SIZE*i);
+		}
 
-
-/*initialize field - everything is possible*/
-for(i=0;i<SU_SIZE;i++)
-	for(j=0;j<SU_SIZE;j++)
-		for(k=0;k<SU_SIZE;k++)
-			field[i][j][k] = 1;
-
-/*initialize sol*/
-for(i=0;i<SU_SIZE;i++)
-	for(j=0;j<SU_SIZE;j++)
-		sol[i][j] = 0;
-
-/*read in hints row wise, one at once*/
-for(i=0;i<SU_SIZE;i++){
-	for(j=0;j<SU_SIZE;j++){
-		scanf("%d\n",&hint);
-		printf("%d ",hint);
-		set(j,i,hint);
-	}
-	printf("\n");
-}
-
-/*solve*/
-while(unsolved()){
-
-	/*check for obvious symbols*/
-	int pos;
+	/*initialize field - everything is possible*/
 	for(i=0;i<SU_SIZE;i++)
+		for(j=0;j<SU_SIZE;j++)
+			for(k=0;k<SU_SIZE;k++)
+				field[i][j][k] = 1;
+
+	/*initialize sol*/
+	for(i=0;i<SU_SIZE;i++)
+		for(j=0;j<SU_SIZE;j++)
+			sol[i][j] = 0;
+
+	/*read in hints row wise, one at once*/
+	for(i=0;i<SU_SIZE;i++){
 		for(j=0;j<SU_SIZE;j++){
-			pos = -1;
-			for(k=0;k<SU_SIZE;k++){
-				if(field[i][j][k] == 1 && pos == -1){
-					pos = k;
-				} else if(pos != -1){
-					pos = -2;
+			scanf("%d\n",&hint);
+			printf("%d ",hint);
+			set(j,i,hint);
+		}
+		printf("\n");
+	}
+
+	/*solve*/
+	while(unsolved()){
+		/*check for obvious symbols*/
+		int pos;
+		for(i=0;i<SU_SIZE;i++)
+			for(j=0;j<SU_SIZE;j++){
+				pos = -1;
+				for(k=0;k<SU_SIZE;k++){
+					if(field[i][j][k] == 1 && pos == -1){
+						pos = k;
+					} else if(pos != -1){
+						pos = -2;
+					}
 				}
-			}
-			if(pos >= 0)
-				set(j,i,pos);
-			}
+				if(pos >= 0)
+					set(j,i,pos);
+				}
+	}
 
-
-}
-
-
-/*print out solution*/
-for(i=0;i<SU_SIZE;i++){
-	for(j=0;j<SU_SIZE;j++)
-		printf("%d ",sol[i][j]);
-	printf("\n");
-}
-
+	/*print out solution*/
+	for(i=0;i<SU_SIZE;i++){
+		for(j=0;j<SU_SIZE;j++)
+			printf("%d ",sol[i][j]);
+		printf("\n");
+	}
 }

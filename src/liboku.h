@@ -32,17 +32,13 @@ void oku_sod_print(oku_sod* sod);
 void oku_sod_destroy(oku_sod* sod);
 
 //solver
-
+//the good ones
 void oku_mcsol(oku_sod* sod, double temp);
 void oku_mcsol2(oku_sod* sod, double temp);
 void oku_backtrack(oku_sod* sod);
 
-//util
-
-int oku_solcount(oku_sod* sod);
-
-//generators
-
-void oku_mcgen(oku_sod* sod, double temp);
+//the bad ones
+void oku_mcblksol(oku_sod* sod, double temp);
+void oku_ineldermeads(oku_sod* sod);
 
 #endif

@@ -22,6 +22,8 @@
 #include <malloc.h>
 #include "common.h"
 
+/*this file contains solvers using optimisation techniques*/
+
 // first monte carlo solver, mildly constraint
 void oku_mcsol(oku_sod* sod, double temp){
 	int i,j,num,size = sod->size;
@@ -135,7 +137,7 @@ void oku_mcblksol(oku_sod* sod, double temp){
 	}
 
 }
-				
+
 // completely unconstrained monte carlo
 void oku_mcsol2(oku_sod* sod, double temp){
 	int i,j,num,size = sod->size;
@@ -299,7 +301,7 @@ void oku_ineldermeads(oku_sod* sod){
 			printf("Shrinking\n");
 			}
 		}
-	}while(min>0);
+	} while(min>0);
 
 	//destroy
 	for(i=0;i<dim;i++)
@@ -310,6 +312,5 @@ void oku_ineldermeads(oku_sod* sod){
 	
 	free(polytope);
 	free(fit);
-
 }
 
