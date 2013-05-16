@@ -1,2 +1,2 @@
-: foreach backtrack.c gsudoku.c mckurzclean.c mckurzok.c mcsudoku.c mcsudoku2.c sudoku.c sudokuveryshort.c |> gcc -o %o %f -lm |> %B
+: foreach backtrack.c gsudoku.c mckurzclean.c mckurzok.c mcsudoku.c mcsudoku2.c sudoku.c |> gcc -o %o %f -lm |> %B
 : mckurz.c |> gcc -o %o -DZ="for(i=0;i<81;i++)" -DW="for(i=0;i<27;i++)" -DX="for(j=1;j<10;j++)" -DY="j=f[i2];f[i2]=f[i1];f[i1]=j;" -DV="][j]+=f[i]==j?1:0;" %f -lm |> %B
