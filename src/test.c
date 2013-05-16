@@ -19,15 +19,16 @@
 
 
 #define SUD_SIZE 9
+#define N_SOLVER 5
 
 int main(int argc, char** argv){
-	//TODO nicer
-	int i,j,in[16];
+	int i,j,in[SUD_SIZE];
 
-	oku_sod* sod,*sod2;
+	oku_sod* sod[N_SOLVER];
 	//init sod
-	oku_sod_init(&sod,SUD_SIZE);
-	oku_sod_init(&sod2,SUD_SIZE);
+	for(i=0;i<N_SOLVER;i++){
+		oku_sod_init(&sod[i],SUD_SIZE);
+	}
 
 	/* read in sudoku*/
 	if(SUD_SIZE==9)
@@ -35,7 +36,7 @@ int main(int argc, char** argv){
 		scanf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d",
 		&in[0],&in[1],&in[2],&in[3],&in[4],&in[5],&in[6],&in[7],&in[8]);
 		for(j=0;j<9;j++){
-			set_xy(sod,j,i,in[j]);
+			set_xy(sod[0],j,i,in[j]);
 		}
 	}
 	if(SUD_SIZE==16)
@@ -44,25 +45,22 @@ int main(int argc, char** argv){
 		&in[0],&in[1],&in[2],&in[3],&in[4],&in[5],&in[6],&in[7],
 		&in[8],&in[9],&in[10],&in[11],&in[12],&in[13],&in[14],&in[15]);
 		for(j=0;j<16;j++){
-			set_xy(sod,j,i,in[j]);
+			set_xy(sod[0],j,i,in[j]);
 		}
 	}
 
-	oku_sod_copy(sod2,sod);
+	for(i=1;i<N_SOLVER;i++){
+		oku_sod_copy(sod[i],sod[0]);
+	}
 
+	oku_mcsol(sod[0],0.7);
+	oku_mcsol2(sod[1],0.7);
+//	oku_mcblksol(sod[2],0.5);
+	oku_backtrack(sod[3]);
+//	oku_ineldermeads(sod[4]);
+	oku_sod_print(sod[0]);
 
-	oku_mcsol(sod,0.7);
-	oku_mcsol2(sod2,0.7);
-//	oku_mcblksol(sod,0.5);
-//	oku_backtrack(sod);
-//	oku_ineldermeads(sod);
-	oku_sod_print(sod);
-
-	oku_sod_destroy(sod);
+	for(i=0;i<N_SOLVER;i++){
+		oku_sod_destroy(sod[i]);
+	}
 }
-			
-			
-
-	
-
-
